@@ -2,11 +2,11 @@
 
 > 赛博健身：每天早上随机推送一道算法题。再来一组 💪
 
-LeetLift 使用 GitHub Actions 定时选题，通过 PushPlus 发送到微信。它支持 LeetCode Hot 100 和全题库，默认不重复；完成后可以在推送中选择“会了 / 卡住 / 不会”，GitHub 会自动维护复习队列。
+LeetLift 使用 GitHub Actions 定时选题，通过 PushPlus 发送到邮箱、微信、App 或 ClawBot。它支持 LeetCode Hot 100 和全题库，默认不重复；完成后可以在推送中选择“会了 / 卡住 / 不会”，GitHub 会自动维护复习队列。
 
 ## 能做什么
 
-- 每天北京时间 08:00 自动推送一道题
+- 每天北京时间 10:00 自动推送一道题
 - `hot100` / `all` 两种题目范围
 - 可按简单、中等、困难筛选，默认排除会员题
 - 一轮内避免重复，全部练完后自动开始下一轮
@@ -20,7 +20,7 @@ LeetLift 使用 GitHub Actions 定时选题，通过 PushPlus 发送到微信。
 个人使用基本是 0 元：
 
 - 公开仓库使用标准 GitHub 托管 Runner 不计费；私有仓库受账户 Actions 配额限制
-- PushPlus 微信公众号渠道可免费使用，一天一条远低于一般个人用量
+- PushPlus 邮件等基础渠道可免费使用，一天一条远低于一般个人用量
 - 题目数据来自力扣网页使用的公开 GraphQL 接口
 
 PushPlus 的免费策略和 GitHub Actions 配额可能调整，请以各自官网当前说明为准。
@@ -31,7 +31,8 @@ PushPlus 的免费策略和 GitHub Actions 配额可能调整，请以各自官�
 
 1. 打开 [PushPlus](https://www.pushplus.plus/)，登录并关注其微信公众号。
 2. 在个人中心复制你的用户 Token。
-3. 不要把 Token 写进代码或 `config.json`。
+3. 在 `个人资料 → 邮箱` 中绑定并验证收件邮箱；邮件渠道不会读取仓库中的邮箱地址。
+4. 不要把 Token 写进代码或 `config.json`。
 
 ### 2. 添加 GitHub Secret
 
@@ -60,7 +61,7 @@ PushPlus 的免费策略和 GitHub Actions 配额可能调整，请以各自官�
 进入 `Actions → Daily LeetLift → Run workflow`：
 
 1. 先选择 `dry_run=true`，确认选题和 HTML 生成正常；这次不会推送。
-2. 再选择 `dry_run=false`，确认微信收到消息。
+2. 再选择 `dry_run=false`，确认已验证的邮箱收到消息。
 
 定时工作流只会在默认分支上的 workflow 文件生效。
 
@@ -72,6 +73,7 @@ PushPlus 的免费策略和 GitHub Actions 配额可能调整，请以各自官�
 {
   "scope": "hot100",
   "difficulty": "all",
+  "pushplus_channel": "mail",
   "exclude_paid": true,
   "prefer_review": true,
   "timezone": "Asia/Shanghai",
@@ -83,6 +85,7 @@ PushPlus 的免费策略和 GitHub Actions 配额可能调整，请以各自官�
 | --- | --- | --- |
 | `scope` | `hot100` / `all` | 每日默认选题范围 |
 | `difficulty` | `all` / `easy` / `medium` / `hard` | 难度筛选 |
+| `pushplus_channel` | `mail` / `wechat` / `app` / `clawbot` | PushPlus 发送渠道 |
 | `exclude_paid` | `true` / `false` | 是否排除会员题 |
 | `prefer_review` | `true` / `false` | 是否优先推送到期复习题 |
 | `timezone` | IANA 时区名 | 反馈和历史记录使用的日期时区 |
@@ -97,10 +100,10 @@ PushPlus 的免费策略和 GitHub Actions 配额可能调整，请以各自官�
 ```yaml
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 2 * * *"
 ```
 
-GitHub cron 使用 UTC，`0 0 * * *` 对应北京时间每天 08:00。GitHub 定时任务可能有几分钟延迟，不适合要求准点到秒的场景。
+GitHub cron 使用 UTC，`0 2 * * *` 对应北京时间每天 10:00。GitHub 定时任务可能有几分钟延迟，不适合要求准点到秒的场景。
 
 常用时间：
 
@@ -109,15 +112,16 @@ GitHub cron 使用 UTC，`0 0 * * *` 对应北京时间每天 08:00。GitHub 定
 | 07:30 | `30 23 * * *` |
 | 08:00 | `0 0 * * *` |
 | 09:00 | `0 1 * * *` |
+| 10:00 | `0 2 * * *` |
 
 修改 cron 后提交到默认分支即可。
 
 ## 反馈与复习机制
 
-PushPlus 本身是单向推送，因此这里采用零后端方案：
+PushPlus 邮件和服务号都是单向推送，因此这里采用零后端方案：
 
-1. 在微信推送底部点击“会了 / 卡住 / 不会”。
-2. 微信内置浏览器打开已经填好的 GitHub Issue。
+1. 在邮件或微信推送底部点击“会了 / 卡住 / 不会”。
+2. 浏览器打开已经填好的 GitHub Issue。
 3. 点击 `Submit new issue`。
 4. `Record LeetLift Feedback` 工作流验证提交人是仓库 owner，更新 `state.json`，然后自动关闭 Issue。
 

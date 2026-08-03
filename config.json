@@ -1,6 +1,7 @@
 {
   "scope": "hot100",
   "difficulty": "all",
+  "pushplus_channel": "mail",
   "exclude_paid": true,
   "prefer_review": true,
   "timezone": "Asia/Shanghai",

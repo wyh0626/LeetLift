@@ -70,8 +70,8 @@ def run_daily(args: argparse.Namespace) -> int:
         return 0
 
     token = os.environ.get("PUSHPLUS_TOKEN", "")
-    result = send_message(token, title, content)
-    print(f"PushPlus 推送成功: {result.get('msg', 'OK')}")
+    result = send_message(token, title, content, channel=config.pushplus_channel)
+    print(f"PushPlus 推送成功: {result.get('msg', 'OK')} (channel={config.pushplus_channel})")
 
     record_delivery(
         state,
@@ -85,7 +85,8 @@ def run_daily(args: argparse.Namespace) -> int:
     save_state(args.state, state)
     _write_summary(
         f"## LeetLift 推送成功\n\n- {problem.frontend_id}. {problem.display_title}\n"
-        f"- scope: `{scope}`\n- kind: `{selection.kind}`"
+        f"- scope: `{scope}`\n- kind: `{selection.kind}`\n"
+        f"- channel: `{config.pushplus_channel}`"
     )
     return 0
 

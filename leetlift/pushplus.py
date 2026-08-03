@@ -12,7 +12,13 @@ class PushPlusError(RuntimeError):
     pass
 
 
-def send_message(token: str, title: str, content: str, timeout: int = 20) -> dict:
+def send_message(
+    token: str,
+    title: str,
+    content: str,
+    channel: str = "wechat",
+    timeout: int = 20,
+) -> dict:
     if not token:
         raise PushPlusError("缺少 PUSHPLUS_TOKEN")
     payload = json.dumps(
@@ -21,6 +27,7 @@ def send_message(token: str, title: str, content: str, timeout: int = 20) -> dic
             "title": title,
             "content": content,
             "template": "html",
+            "channel": channel,
         },
         ensure_ascii=False,
     ).encode("utf-8")
