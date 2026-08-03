@@ -1,0 +1,55 @@
+name: Record LeetLift Feedback
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: leetlift-state-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  record:
+    if: >-
+      startsWith(github.event.issue.title, '[LeetLift feedback]') &&
+      github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ISSUE_BODY: ${{ github.event.issue.body }}
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test
+        run: python -m unittest discover -s tests -v
+
+      - name: Record feedback
+        run: python -m leetlift feedback --issue-number "$ISSUE_NUMBER"
+
+      - name: Commit state
+        shell: bash
+        run: |
+          if git diff --quiet -- state.json; then
+            echo "state.json unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state.json
+          git commit -m "chore: record LeetLift feedback #${ISSUE_NUMBER} [skip ci]"
+          git push
+
+      - name: Close feedback issue
+        run: gh issue close "$ISSUE_NUMBER" --comment "反馈已记录，复习日期已更新。再来一组 💪"

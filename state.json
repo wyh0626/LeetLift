@@ -1,0 +1,16 @@
+{
+  "history": [],
+  "processed_feedback_issues": [],
+  "reviews": {},
+  "scopes": {
+    "all": {
+      "cycle": 1,
+      "seen": []
+    },
+    "hot100": {
+      "cycle": 1,
+      "seen": []
+    }
+  },
+  "version": 1
+}

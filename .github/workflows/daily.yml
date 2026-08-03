@@ -1,0 +1,72 @@
+name: Daily LeetLift
+
+on:
+  schedule:
+    # GitHub cron 使用 UTC；00:00 UTC = 北京时间 08:00。
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 题目范围（config 表示读取 config.json）
+        required: true
+        default: config
+        type: choice
+        options:
+          - config
+          - hot100
+          - all
+      dry_run:
+        description: 只选题和生成预览，不推送、不更新 state.json
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: leetlift-state-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+      SELECTED_SCOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.scope || 'config' }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test
+        run: python -m unittest discover -s tests -v
+
+      - name: Select and push today's problem
+        shell: bash
+        run: |
+          args=(daily --scope "$SELECTED_SCOPE" --repository "$GITHUB_REPOSITORY")
+          if [[ "$DRY_RUN" == "true" ]]; then
+            args+=(--dry-run)
+          fi
+          python -m leetlift "${args[@]}"
+
+      - name: Commit state
+        if: env.DRY_RUN != 'true'
+        shell: bash
+        run: |
+          if git diff --quiet -- state.json; then
+            echo "state.json unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state.json
+          git commit -m "chore: update LeetLift state [skip ci]"
+          git push

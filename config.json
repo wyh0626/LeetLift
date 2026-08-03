@@ -1,0 +1,8 @@
+{
+  "scope": "hot100",
+  "difficulty": "all",
+  "exclude_paid": true,
+  "prefer_review": true,
+  "timezone": "Asia/Shanghai",
+  "max_history": 365
+}
