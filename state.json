@@ -1,5 +1,47 @@
 {
-  "history": [],
+  "history": [
+    {
+      "date": "2026-08-03",
+      "kind": "new",
+      "problem": {
+        "difficulty": "MEDIUM",
+        "frontend_id": "79",
+        "paid_only": false,
+        "section": "回溯",
+        "slug": "word-search",
+        "tags": [
+          {
+            "name": "Depth-First Search",
+            "name_cn": "深度优先搜索",
+            "slug": "depth-first-search"
+          },
+          {
+            "name": "Array",
+            "name_cn": "数组",
+            "slug": "array"
+          },
+          {
+            "name": "String",
+            "name_cn": "字符串",
+            "slug": "string"
+          },
+          {
+            "name": "Backtracking",
+            "name_cn": "回溯",
+            "slug": "backtracking"
+          },
+          {
+            "name": "Matrix",
+            "name_cn": "矩阵",
+            "slug": "matrix"
+          }
+        ],
+        "title": "Word Search",
+        "title_cn": "单词搜索"
+      },
+      "scope": "hot100"
+    }
+  ],
   "processed_feedback_issues": [],
   "reviews": {},
   "scopes": {
@@ -9,7 +51,9 @@
     },
     "hot100": {
       "cycle": 1,
-      "seen": []
+      "seen": [
+        "word-search"
+      ]
     }
   },
   "version": 1
