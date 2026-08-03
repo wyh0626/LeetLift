@@ -17,13 +17,14 @@ RATINGS = {"easy", "stuck", "hard"}
 
 def default_state() -> dict[str, Any]:
     return {
-        "version": 1,
+        "version": 2,
         "scopes": {
             "hot100": {"cycle": 1, "seen": []},
             "all": {"cycle": 1, "seen": []},
         },
         "reviews": {},
         "history": [],
+        "feedback_history": [],
         "processed_feedback_issues": [],
     }
 
@@ -38,7 +39,9 @@ def normalize_state(raw: dict[str, Any]) -> dict[str, Any]:
         state["scopes"][scope].setdefault("seen", [])
     state.setdefault("reviews", {})
     state.setdefault("history", [])
+    state.setdefault("feedback_history", [])
     state.setdefault("processed_feedback_issues", [])
+    state["version"] = 2
     return state
 
 
@@ -173,6 +176,18 @@ def apply_feedback(
         "last_feedback": today.isoformat(),
         "next_review": (today + timedelta(days=interval)).isoformat(),
     }
+    state.setdefault("feedback_history", []).append(
+        {
+            "date": today.isoformat(),
+            "pushed_date": feedback.get("date", ""),
+            "issue_number": issue_number,
+            "slug": slug,
+            "frontend_id": str(problem_data.get("frontend_id") or ""),
+            "title": str(problem_data.get("title_cn") or problem_data.get("title") or slug),
+            "rating": rating,
+        }
+    )
+    state["feedback_history"] = state["feedback_history"][-2000:]
     processed.append(issue_number)
     state["processed_feedback_issues"] = processed[-500:]
     return True

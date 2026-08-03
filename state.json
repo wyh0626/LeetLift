@@ -1,4 +1,5 @@
 {
+  "feedback_history": [],
   "history": [
     {
       "date": "2026-08-03",
@@ -88,5 +89,5 @@
       ]
     }
   },
-  "version": 1
+  "version": 2
 }

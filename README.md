@@ -4,6 +4,8 @@
 
 LeetLift 使用 GitHub Actions 定时选题，通过 PushPlus 发送到邮箱、微信、App 或 ClawBot。它支持 LeetCode Hot 100 和全题库，默认不重复；完成后可以在推送中选择“会了 / 卡住 / 不会”，GitHub 会自动维护复习队列。
 
+[![LeetLift 赛博健身热力图](./assets/leetlift-heatmap.svg)](https://github.com/wyh0626/LeetLift)
+
 ## 能做什么
 
 - 每天北京时间 10:00 自动推送一道题
@@ -13,6 +15,7 @@ LeetLift 使用 GitHub Actions 定时选题，通过 PushPlus 发送到邮箱、
 - 推送包含题号、中英文标题、难度、知识点和 LeetCode 链接
 - 通过预填 GitHub Issue 收集“会了 / 卡住 / 不会”反馈
 - 到期复习题优先于新题，反馈 Issue 处理后自动关闭
+- 自动生成过去一年的训练热力图，可嵌入 GitHub 个人首页
 - 纯 Python 标准库，无服务器、无数据库、无第三方包
 
 ## 成本
@@ -150,6 +153,26 @@ PUSHPLUS_TOKEN="你的 token" python3 -m leetlift daily --repository wyh0626/Lee
 
 不要把包含真实 Token 的 shell 历史、日志或截图提交到仓库。
 
+单独重新生成热力图：
+
+```bash
+python3 -m leetlift heatmap
+```
+
+热力图输出到 `assets/leetlift-heatmap.svg`。蓝色表示当天收到题目，绿色、黄色、红色分别表示“会了、卡住、不会”。每日推送和反馈工作流都会自动重新生成并提交它。
+
+## 在 GitHub 个人首页展示
+
+在与 GitHub 用户名同名的公开仓库 `wyh0626/wyh0626` 的根目录 `README.md` 中引用：
+
+```html
+<a href="https://github.com/wyh0626/LeetLift">
+  <img src="https://raw.githubusercontent.com/wyh0626/LeetLift/main/assets/leetlift-heatmap.svg" alt="LeetLift 赛博健身热力图" width="100%">
+</a>
+```
+
+GitHub 会直接读取最新 SVG；更新后可能有短暂缓存。
+
 ## 项目结构
 
 ```text
@@ -159,6 +182,7 @@ PUSHPLUS_TOKEN="你的 token" python3 -m leetlift daily --repository wyh0626/Lee
 │   └── feedback.yml    # 处理反馈 Issue、更新复习队列
 ├── leetlift/           # Python 标准库实现
 ├── tests/              # 单元测试
+├── assets/             # 自动生成的年度 SVG 热力图
 ├── config.json         # 用户配置
 └── state.json          # 去重、历史和复习状态
 ```

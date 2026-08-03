@@ -10,6 +10,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from .config import VALID_SCOPES, load_config
+from .heatmap import write_heatmap
 from .leetcode import LeetCodeClient
 from .message import build_message
 from .pushplus import send_message
@@ -83,6 +84,7 @@ def run_daily(args: argparse.Namespace) -> int:
         selection.cycle_reset,
     )
     save_state(args.state, state)
+    write_heatmap(args.heatmap, state, today)
     _write_summary(
         f"## LeetLift 推送成功\n\n- {problem.frontend_id}. {problem.display_title}\n"
         f"- scope: `{scope}`\n- kind: `{selection.kind}`\n"
@@ -98,15 +100,26 @@ def run_feedback(args: argparse.Namespace) -> int:
         body = Path(args.body_file).read_text(encoding="utf-8")
     feedback = parse_feedback(body)
     state = load_state(args.state)
-    changed = apply_feedback(state, feedback, args.issue_number, _today(config.timezone))
+    today = _today(config.timezone)
+    changed = apply_feedback(state, feedback, args.issue_number, today)
     if changed:
         save_state(args.state, state)
+        write_heatmap(args.heatmap, state, today)
         print(
             f"已记录反馈: {feedback['slug']} -> {feedback['rating']}; "
             f"next_review={state['reviews'][feedback['slug']]['next_review']}"
         )
     else:
         print(f"Issue #{args.issue_number} 已处理，跳过重复写入")
+    return 0
+
+
+def run_heatmap(args: argparse.Namespace) -> int:
+    config = load_config(args.config)
+    today = date.fromisoformat(args.date) if args.date else _today(config.timezone)
+    state = load_state(args.state)
+    write_heatmap(args.output, state, today)
+    print(f"热力图已生成: {args.output}")
     return 0
 
 
@@ -119,6 +132,7 @@ def build_parser() -> argparse.ArgumentParser:
     daily.add_argument("--state", default="state.json")
     daily.add_argument("--scope", choices=["config", "hot100", "all"], default="config")
     daily.add_argument("--repository", default="")
+    daily.add_argument("--heatmap", default="assets/leetlift-heatmap.svg")
     daily.add_argument("--dry-run", action="store_true", help="只打印 HTML，不推送也不更新状态")
     daily.set_defaults(func=run_daily)
 
@@ -127,7 +141,15 @@ def build_parser() -> argparse.ArgumentParser:
     feedback.add_argument("--state", default="state.json")
     feedback.add_argument("--issue-number", type=int, required=True)
     feedback.add_argument("--body-file", help="本地调试时从文件读取 Issue 正文")
+    feedback.add_argument("--heatmap", default="assets/leetlift-heatmap.svg")
     feedback.set_defaults(func=run_feedback)
+
+    heatmap = subparsers.add_parser("heatmap", help="从 state.json 生成年度 SVG 热力图")
+    heatmap.add_argument("--config", default="config.json")
+    heatmap.add_argument("--state", default="state.json")
+    heatmap.add_argument("--output", default="assets/leetlift-heatmap.svg")
+    heatmap.add_argument("--date", help="指定生成日期，格式 YYYY-MM-DD")
+    heatmap.set_defaults(func=run_heatmap)
     return parser
 
 
