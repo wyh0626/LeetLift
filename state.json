@@ -40,6 +40,37 @@
         "title_cn": "单词搜索"
       },
       "scope": "hot100"
+    },
+    {
+      "date": "2026-08-03",
+      "kind": "new",
+      "problem": {
+        "difficulty": "MEDIUM",
+        "frontend_id": "739",
+        "paid_only": false,
+        "section": "栈",
+        "slug": "daily-temperatures",
+        "tags": [
+          {
+            "name": "Stack",
+            "name_cn": "栈",
+            "slug": "stack"
+          },
+          {
+            "name": "Array",
+            "name_cn": "数组",
+            "slug": "array"
+          },
+          {
+            "name": "Monotonic Stack",
+            "name_cn": "单调栈",
+            "slug": "monotonic-stack"
+          }
+        ],
+        "title": "Daily Temperatures",
+        "title_cn": "每日温度"
+      },
+      "scope": "hot100"
     }
   ],
   "processed_feedback_issues": [],
@@ -52,7 +83,8 @@
     "hot100": {
       "cycle": 1,
       "seen": [
-        "word-search"
+        "word-search",
+        "daily-temperatures"
       ]
     }
   },
