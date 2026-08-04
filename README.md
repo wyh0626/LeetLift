@@ -113,7 +113,7 @@ LeetLift 使用 GitHub Actions 定时选题，默认可通过 Resend 邮件 API 
 {
   "scope": "hot100",
   "difficulty": "all",
-  "delivery_provider": "pushplus",
+  "delivery_provider": "resend",
   "pushplus_channel": "mail",
   "resend_from": "LeetLift 赛博健身 <onboarding@resend.dev>",
   "smtp_host": "smtp.qq.com",
