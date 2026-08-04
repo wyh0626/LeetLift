@@ -3,6 +3,7 @@
   "difficulty": "all",
   "delivery_provider": "pushplus",
   "pushplus_channel": "mail",
+  "resend_from": "LeetLift 赛博健身 <onboarding@resend.dev>",
   "smtp_host": "smtp.qq.com",
   "smtp_port": 465,
   "exclude_paid": true,

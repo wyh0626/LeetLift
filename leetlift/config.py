@@ -9,7 +9,7 @@ from typing import Any
 VALID_SCOPES = {"hot100", "all"}
 VALID_DIFFICULTIES = {"all", "easy", "medium", "hard"}
 VALID_PUSHPLUS_CHANNELS = {"wechat", "mail", "app", "clawbot"}
-VALID_DELIVERY_PROVIDERS = {"pushplus", "smtp"}
+VALID_DELIVERY_PROVIDERS = {"pushplus", "resend", "smtp"}
 
 
 @dataclass(frozen=True)
@@ -18,6 +18,7 @@ class Config:
     difficulty: str = "all"
     delivery_provider: str = "pushplus"
     pushplus_channel: str = "wechat"
+    resend_from: str = "LeetLift 赛博健身 <onboarding@resend.dev>"
     smtp_host: str = "smtp.qq.com"
     smtp_port: int = 465
     exclude_paid: bool = True
@@ -32,6 +33,9 @@ class Config:
             difficulty=str(raw.get("difficulty", "all")).lower(),
             delivery_provider=str(raw.get("delivery_provider", "pushplus")).lower(),
             pushplus_channel=str(raw.get("pushplus_channel", "wechat")).lower(),
+            resend_from=str(
+                raw.get("resend_from", "LeetLift 赛博健身 <onboarding@resend.dev>")
+            ),
             smtp_host=str(raw.get("smtp_host", "smtp.qq.com")),
             smtp_port=int(raw.get("smtp_port", 465)),
             exclude_paid=bool(raw.get("exclude_paid", True)),
@@ -51,6 +55,8 @@ class Config:
             raise ValueError(f"delivery_provider 必须是 {sorted(VALID_DELIVERY_PROVIDERS)} 之一")
         if self.pushplus_channel not in VALID_PUSHPLUS_CHANNELS:
             raise ValueError(f"pushplus_channel 必须是 {sorted(VALID_PUSHPLUS_CHANNELS)} 之一")
+        if not self.resend_from:
+            raise ValueError("resend_from 不能为空")
         if not self.smtp_host:
             raise ValueError("smtp_host 不能为空")
         if self.smtp_port < 1 or self.smtp_port > 65535:

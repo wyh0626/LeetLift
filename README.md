@@ -2,7 +2,7 @@
 
 > 赛博健身：每天早上随机推送一道算法题。再来一组 💪
 
-LeetLift 使用 GitHub Actions 定时选题，可通过 QQ 邮箱 SMTP 直接发信，也可继续使用 PushPlus。它支持 LeetCode Hot 100 和全题库，默认不重复；完成后可以在推送中选择“会了 / 卡住 / 不会”，GitHub 会自动维护复习队列。
+LeetLift 使用 GitHub Actions 定时选题，默认可通过 Resend 邮件 API 发信，也支持 QQ 邮箱 SMTP 和 PushPlus。它支持 LeetCode Hot 100 和全题库，默认不重复；完成后可以在推送中选择“会了 / 卡住 / 不会”，GitHub 会自动维护复习队列。
 
 [![LeetLift 赛博健身热力图](./assets/leetlift-heatmap.svg)](https://github.com/wyh0626/LeetLift)
 
@@ -23,7 +23,7 @@ LeetLift 使用 GitHub Actions 定时选题，可通过 QQ 邮箱 SMTP 直接发
 个人使用基本是 0 元：
 
 - 公开仓库使用标准 GitHub 托管 Runner 不计费；私有仓库受账户 Actions 配额限制
-- QQ 邮箱 SMTP 免费；PushPlus 基础渠道也可作为备用
+- Resend 免费额度足够每天一封；QQ SMTP 和 PushPlus 可作为备用
 - 题目数据来自力扣网页使用的公开 GraphQL 接口
 
 邮件服务和 GitHub Actions 配额可能调整，请以各自官网当前说明为准。
@@ -32,7 +32,20 @@ LeetLift 使用 GitHub Actions 定时选题，可通过 QQ 邮箱 SMTP 直接发
 
 ### 1. 配置邮件发送方式
 
-#### 方案 A：QQ 邮箱 SMTP 直发（推荐）
+#### 方案 A：Resend（推荐，配置最少）
+
+使用收件邮箱注册 [Resend](https://resend.com/)，创建权限为 `Sending access` 的 API Key。没有自有域名时，Resend 的默认发件域名只能发给账号注册邮箱，正好适合个人自用。
+
+创建两个 GitHub Secret：
+
+| Name | Value |
+| --- | --- |
+| `RESEND_API_KEY` | `re_` 开头的 Sending access Key |
+| `RESEND_TO` | Resend 账号注册邮箱 |
+
+然后创建仓库变量 `DELIVERY_PROVIDER=resend`。`RESEND_TO` 本身不是接口凭据，但使用 Secret 可以避免收件地址出现在公开仓库中。
+
+#### 方案 B：QQ 邮箱 SMTP 直发
 
 建议注册一个只用于 LeetLift 的发件邮箱，避免授权码泄漏时影响主邮箱。进入发件 QQ 邮箱设置，开启 SMTP 服务并生成“授权码”；授权码不是 QQ 登录密码。
 
@@ -56,7 +69,7 @@ LeetLift 使用 GitHub Actions 定时选题，可通过 QQ 邮箱 SMTP 直接发
 
 默认连接 `smtp.qq.com:465` 并强制使用 TLS。Secret 不要写入代码、配置文件、Issue 或 Actions 日志。
 
-#### 方案 B：继续使用 PushPlus
+#### 方案 C：继续使用 PushPlus
 
 1. 打开 [PushPlus](https://www.pushplus.plus/)，登录并关注其微信公众号。
 2. 在个人中心复制你的用户 Token。
@@ -69,7 +82,7 @@ LeetLift 使用 GitHub Actions 定时选题，可通过 QQ 邮箱 SMTP 直接发
 | --- | --- |
 | `PUSHPLUS_TOKEN` | 你的 PushPlus 用户 Token |
 
-不创建 `DELIVERY_PROVIDER` 变量时，工作流继续读取 `config.json`，当前默认使用 PushPlus。确认 SMTP 测试成功后，可以删除旧的 `PUSHPLUS_TOKEN`。
+不创建 `DELIVERY_PROVIDER` 变量时，工作流读取 `config.json`。确认新通道测试成功后，可以删除旧通道的 Secret。
 
 ### 2. 允许工作流回写状态
 
@@ -102,6 +115,7 @@ LeetLift 使用 GitHub Actions 定时选题，可通过 QQ 邮箱 SMTP 直接发
   "difficulty": "all",
   "delivery_provider": "pushplus",
   "pushplus_channel": "mail",
+  "resend_from": "LeetLift 赛博健身 <onboarding@resend.dev>",
   "smtp_host": "smtp.qq.com",
   "smtp_port": 465,
   "exclude_paid": true,
@@ -115,8 +129,9 @@ LeetLift 使用 GitHub Actions 定时选题，可通过 QQ 邮箱 SMTP 直接发
 | --- | --- | --- |
 | `scope` | `hot100` / `all` | 每日默认选题范围 |
 | `difficulty` | `all` / `easy` / `medium` / `hard` | 难度筛选 |
-| `delivery_provider` | `smtp` / `pushplus` | 默认发送方式；可被仓库变量 `DELIVERY_PROVIDER` 覆盖 |
+| `delivery_provider` | `resend` / `smtp` / `pushplus` | 默认发送方式；可被仓库变量 `DELIVERY_PROVIDER` 覆盖 |
 | `pushplus_channel` | `mail` / `wechat` / `app` / `clawbot` | PushPlus 发送渠道 |
+| `resend_from` | 发件人 | 无自有域名时使用 `onboarding@resend.dev` |
 | `smtp_host` | 域名 | SMTP 服务器，QQ 邮箱为 `smtp.qq.com` |
 | `smtp_port` | 端口 | `465` 使用隐式 TLS，其他端口使用 STARTTLS |
 | `exclude_paid` | `true` / `false` | 是否排除会员题 |
@@ -151,7 +166,7 @@ GitHub cron 使用 UTC，`7 2 * * *` 对应北京时间每天 10:07。这里特�
 
 ## 反馈与复习机制
 
-SMTP 邮件和 PushPlus 都是单向推送，因此这里采用零后端方案：
+Resend、SMTP 邮件和 PushPlus 都是单向推送，因此这里采用零后端方案：
 
 1. 在邮件或微信推送底部点击“会了 / 卡住 / 不会”。
 2. 浏览器打开已经填好的 GitHub Issue。
@@ -181,6 +196,15 @@ python3 -m leetlift daily --dry-run --repository wyh0626/LeetLift
 PUSHPLUS_TOKEN="你的 token" python3 -m leetlift daily --repository wyh0626/LeetLift
 ```
 
+使用 Resend：
+
+```bash
+DELIVERY_PROVIDER=resend \
+RESEND_API_KEY="re_..." \
+RESEND_TO="收件邮箱" \
+python3 -m leetlift daily --repository wyh0626/LeetLift
+```
+
 使用 QQ SMTP：
 
 ```bash
@@ -191,7 +215,7 @@ SMTP_TO="收件邮箱" \
 python3 -m leetlift daily --repository wyh0626/LeetLift
 ```
 
-不要把包含真实 Token 或 SMTP 授权码的 shell 历史、日志或截图提交到仓库。
+不要把包含真实 API Key、Token 或 SMTP 授权码的 shell 历史、日志或截图提交到仓库。
 
 单独重新生成热力图：
 
@@ -232,7 +256,7 @@ GitHub 会直接读取最新 SVG；更新后可能有短暂缓存。
 
 LeetCode 没有为这个场景提供承诺稳定的公开 API；本项目调用的是其网页当前使用的 GraphQL 接口。如果字段将来变化，工作流会明确失败且不更新 `state.json`，不会把一次失败误记成已经推送。
 
-SMTP 模式只有在服务器接受邮件后才会保存当天状态；PushPlus 模式仍要求官方接口返回成功码。邮件服务器接受不等同于最终进入收件箱，收件方仍可能延迟、退信或归入垃圾箱。
+只有邮件服务返回成功后，LeetLift 才会保存当天状态。Resend 请求使用每日幂等键，重复执行不会重复发信。服务端接受邮件不等同于最终进入收件箱，收件方仍可能延迟、退信或归入垃圾箱。
 
 ## License
 

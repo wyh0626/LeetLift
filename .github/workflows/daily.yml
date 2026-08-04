@@ -36,6 +36,8 @@ jobs:
     env:
       DELIVERY_PROVIDER: ${{ vars.DELIVERY_PROVIDER }}
       PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_TO: ${{ secrets.RESEND_TO }}
       SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
       SMTP_TO: ${{ secrets.SMTP_TO }}

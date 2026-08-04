@@ -14,6 +14,7 @@ from .heatmap import write_heatmap
 from .leetcode import LeetCodeClient
 from .message import build_message
 from .pushplus import send_message
+from .resend_mail import send_email as send_resend_email
 from .selector import select_problem
 from .smtp_mail import send_email
 from .state import (
@@ -40,8 +41,20 @@ def _today(timezone: str) -> date:
         raise ValueError(f"未知时区: {timezone}") from exc
 
 
-def _deliver(config, title: str, content: str) -> str:
+def _deliver(config, title: str, content: str, idempotency_key: str = "") -> str:
     provider = (os.environ.get("DELIVERY_PROVIDER") or config.delivery_provider).lower()
+    if provider == "resend":
+        result = send_resend_email(
+            api_key=os.environ.get("RESEND_API_KEY", ""),
+            recipient=os.environ.get("RESEND_TO", ""),
+            title=title,
+            content=content,
+            from_address=config.resend_from,
+            idempotency_key=idempotency_key,
+        )
+        delivery = f"resend ({result['id']})"
+        print(f"Resend 邮件请求成功: {delivery}")
+        return delivery
     if provider == "smtp":
         send_email(
             username=os.environ.get("SMTP_USERNAME", ""),
@@ -108,7 +121,7 @@ def run_daily(args: argparse.Namespace) -> int:
         _write_summary(f"## LeetLift dry run\n\n- {problem.frontend_id}. {problem.display_title}\n- scope: `{scope}`")
         return 0
 
-    delivery = _deliver(config, title, content)
+    delivery = _deliver(config, title, content, f"leetlift-daily/{today.isoformat()}")
 
     record_delivery(
         state,
@@ -165,6 +178,7 @@ def run_delivery_test(args: argparse.Namespace) -> int:
         config,
         "🏋️ LeetLift 邮件通道测试",
         "<h2>LeetLift 邮件通道可用 ✓</h2><p>这是一封测试邮件，不会选题、更新状态或修改热力图。</p>",
+        f"leetlift-delivery-test/{os.environ.get('GITHUB_RUN_ID', 'local')}",
     )
     _write_summary(f"## LeetLift 邮件测试成功\n\n- delivery: `{delivery}`")
     return 0
@@ -174,7 +188,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="赛博健身：每天随机推送一道 LeetCode 题")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    daily = subparsers.add_parser("daily", help="选题并通过 PushPlus 推送")
+    daily = subparsers.add_parser("daily", help="选题并通过已配置的邮件通道推送")
     daily.add_argument("--config", default="config.json")
     daily.add_argument("--state", default="state.json")
     daily.add_argument("--scope", choices=["config", "hot100", "all"], default="config")

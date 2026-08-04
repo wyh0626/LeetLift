@@ -22,6 +22,11 @@ class ConfigTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Config.from_dict({"delivery_provider": "unknown"})
 
+    def test_resend_provider_has_safe_default_sender(self):
+        config = Config.from_dict({"delivery_provider": "resend"})
+        self.assertEqual(config.delivery_provider, "resend")
+        self.assertIn("onboarding@resend.dev", config.resend_from)
+
 
 if __name__ == "__main__":
     unittest.main()
