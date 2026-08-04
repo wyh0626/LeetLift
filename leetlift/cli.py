@@ -15,7 +15,7 @@ from .leetcode import LeetCodeClient
 from .message import build_message
 from .pushplus import send_message
 from .selector import select_problem
-from .state import apply_feedback, load_state, parse_feedback, record_delivery, save_state
+from .state import apply_feedback, has_delivery_on, load_state, parse_feedback, record_delivery, save_state
 
 
 def _write_summary(text: str) -> None:
@@ -40,6 +40,12 @@ def run_daily(args: argparse.Namespace) -> int:
 
     today = _today(config.timezone)
     state = load_state(args.state)
+    if not args.dry_run and has_delivery_on(state, today):
+        message = f"{today.isoformat()} 已经成功推送过题目，跳过重复推送"
+        print(message)
+        _write_summary(f"## LeetLift 跳过重复推送\n\n{message}")
+        return 0
+
     source = LeetCodeClient()
     selection = select_problem(
         source=source,

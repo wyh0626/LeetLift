@@ -2,8 +2,9 @@ name: Daily LeetLift
 
 on:
   schedule:
-    # GitHub cron 使用 UTC；02:00 UTC = 北京时间 10:00。
-    - cron: "0 2 * * *"
+    # 避开 GitHub Actions 容易拥堵、甚至丢任务的整点。
+    # GitHub cron 使用 UTC；02:07 UTC = 北京时间 10:07。
+    - cron: "7 2 * * *"
   workflow_dispatch:
     inputs:
       scope:

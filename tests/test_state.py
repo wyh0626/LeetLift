@@ -2,7 +2,13 @@ import unittest
 from datetime import date
 
 from leetlift.models import Problem
-from leetlift.state import apply_feedback, default_state, parse_feedback, record_delivery
+from leetlift.state import (
+    apply_feedback,
+    default_state,
+    has_delivery_on,
+    parse_feedback,
+    record_delivery,
+)
 
 
 class FeedbackTests(unittest.TestCase):
@@ -48,6 +54,10 @@ class FeedbackTests(unittest.TestCase):
         feedback = {"slug": "not-pushed", "rating": "hard", "date": "2026-08-03"}
         with self.assertRaises(ValueError):
             apply_feedback(self.state, feedback, 13, date(2026, 8, 3))
+
+    def test_delivery_date_guard(self):
+        self.assertTrue(has_delivery_on(self.state, date(2026, 8, 3)))
+        self.assertFalse(has_delivery_on(self.state, date(2026, 8, 4)))
 
 
 if __name__ == "__main__":

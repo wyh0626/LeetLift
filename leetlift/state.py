@@ -70,6 +70,11 @@ def save_state(path: str | Path, state: dict[str, Any]) -> None:
         raise
 
 
+def has_delivery_on(state: dict[str, Any], day: date) -> bool:
+    target = day.isoformat()
+    return any(str(item.get("date") or "") == target for item in state.get("history", []))
+
+
 def due_review_problems(
     state: dict[str, Any],
     today: date,
