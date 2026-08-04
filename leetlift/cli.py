@@ -15,7 +15,15 @@ from .leetcode import LeetCodeClient
 from .message import build_message
 from .pushplus import send_message
 from .selector import select_problem
-from .state import apply_feedback, has_delivery_on, load_state, parse_feedback, record_delivery, save_state
+from .smtp_mail import send_email
+from .state import (
+    apply_feedback,
+    has_delivery_on,
+    load_state,
+    parse_feedback,
+    record_delivery,
+    save_state,
+)
 
 
 def _write_summary(text: str) -> None:
@@ -76,9 +84,26 @@ def run_daily(args: argparse.Namespace) -> int:
         _write_summary(f"## LeetLift dry run\n\n- {problem.frontend_id}. {problem.display_title}\n- scope: `{scope}`")
         return 0
 
-    token = os.environ.get("PUSHPLUS_TOKEN", "")
-    result = send_message(token, title, content, channel=config.pushplus_channel)
-    print(f"PushPlus 推送成功: {result.get('msg', 'OK')} (channel={config.pushplus_channel})")
+    provider = (os.environ.get("DELIVERY_PROVIDER") or config.delivery_provider).lower()
+    if provider == "smtp":
+        send_email(
+            username=os.environ.get("SMTP_USERNAME", ""),
+            password=os.environ.get("SMTP_PASSWORD", ""),
+            recipient=os.environ.get("SMTP_TO", ""),
+            title=title,
+            content=content,
+            host=config.smtp_host,
+            port=config.smtp_port,
+        )
+        delivery = f"smtp ({config.smtp_host}:{config.smtp_port})"
+        print(f"SMTP 邮件已被服务器接受: {delivery}")
+    elif provider == "pushplus":
+        token = os.environ.get("PUSHPLUS_TOKEN", "")
+        result = send_message(token, title, content, channel=config.pushplus_channel)
+        delivery = f"pushplus ({config.pushplus_channel})"
+        print(f"PushPlus 推送成功: {result.get('msg', 'OK')} (channel={config.pushplus_channel})")
+    else:
+        raise ValueError(f"无效 delivery provider: {provider}")
 
     record_delivery(
         state,
@@ -94,7 +119,7 @@ def run_daily(args: argparse.Namespace) -> int:
     _write_summary(
         f"## LeetLift 推送成功\n\n- {problem.frontend_id}. {problem.display_title}\n"
         f"- scope: `{scope}`\n- kind: `{selection.kind}`\n"
-        f"- channel: `{config.pushplus_channel}`"
+        f"- delivery: `{delivery}`"
     )
     return 0
 

@@ -34,7 +34,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
+      DELIVERY_PROVIDER: ${{ vars.DELIVERY_PROVIDER }}
       PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+      SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      SMTP_TO: ${{ secrets.SMTP_TO }}
       SELECTED_SCOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.scope || 'config' }}
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
     steps:
