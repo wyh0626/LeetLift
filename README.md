@@ -83,7 +83,9 @@ LeetLift 使用 GitHub Actions 定时选题，可通过 QQ 邮箱 SMTP 直接发
 
 ### 3. 首次测试
 
-进入 `Actions → Daily LeetLift → Run workflow`：
+先进入 `Actions → Test LeetLift Delivery → Run workflow`，确认邮件通道测试成功；这不会选题、更新状态或修改热力图。
+
+再进入 `Actions → Daily LeetLift → Run workflow`：
 
 1. 先选择 `dry_run=true`，确认选题和 HTML 生成正常；这次不会推送。
 2. 再选择 `dry_run=false`，确认已验证的邮箱收到消息。
@@ -217,6 +219,7 @@ GitHub 会直接读取最新 SVG；更新后可能有短暂缓存。
 .
 ├── .github/workflows/
 │   ├── daily.yml       # 定时选题、推送、回写状态
+│   ├── delivery-test.yml # 单独测试发送通道，不修改状态
 │   └── feedback.yml    # 处理反馈 Issue、更新复习队列
 ├── leetlift/           # Python 标准库实现
 ├── tests/              # 单元测试

@@ -40,6 +40,30 @@ def _today(timezone: str) -> date:
         raise ValueError(f"未知时区: {timezone}") from exc
 
 
+def _deliver(config, title: str, content: str) -> str:
+    provider = (os.environ.get("DELIVERY_PROVIDER") or config.delivery_provider).lower()
+    if provider == "smtp":
+        send_email(
+            username=os.environ.get("SMTP_USERNAME", ""),
+            password=os.environ.get("SMTP_PASSWORD", ""),
+            recipient=os.environ.get("SMTP_TO", ""),
+            title=title,
+            content=content,
+            host=config.smtp_host,
+            port=config.smtp_port,
+        )
+        delivery = f"smtp ({config.smtp_host}:{config.smtp_port})"
+        print(f"SMTP 邮件已被服务器接受: {delivery}")
+        return delivery
+    if provider == "pushplus":
+        token = os.environ.get("PUSHPLUS_TOKEN", "")
+        result = send_message(token, title, content, channel=config.pushplus_channel)
+        delivery = f"pushplus ({config.pushplus_channel})"
+        print(f"PushPlus 推送成功: {result.get('msg', 'OK')} (channel={config.pushplus_channel})")
+        return delivery
+    raise ValueError(f"无效 delivery provider: {provider}")
+
+
 def run_daily(args: argparse.Namespace) -> int:
     config = load_config(args.config)
     scope = config.scope if args.scope == "config" else args.scope
@@ -84,26 +108,7 @@ def run_daily(args: argparse.Namespace) -> int:
         _write_summary(f"## LeetLift dry run\n\n- {problem.frontend_id}. {problem.display_title}\n- scope: `{scope}`")
         return 0
 
-    provider = (os.environ.get("DELIVERY_PROVIDER") or config.delivery_provider).lower()
-    if provider == "smtp":
-        send_email(
-            username=os.environ.get("SMTP_USERNAME", ""),
-            password=os.environ.get("SMTP_PASSWORD", ""),
-            recipient=os.environ.get("SMTP_TO", ""),
-            title=title,
-            content=content,
-            host=config.smtp_host,
-            port=config.smtp_port,
-        )
-        delivery = f"smtp ({config.smtp_host}:{config.smtp_port})"
-        print(f"SMTP 邮件已被服务器接受: {delivery}")
-    elif provider == "pushplus":
-        token = os.environ.get("PUSHPLUS_TOKEN", "")
-        result = send_message(token, title, content, channel=config.pushplus_channel)
-        delivery = f"pushplus ({config.pushplus_channel})"
-        print(f"PushPlus 推送成功: {result.get('msg', 'OK')} (channel={config.pushplus_channel})")
-    else:
-        raise ValueError(f"无效 delivery provider: {provider}")
+    delivery = _deliver(config, title, content)
 
     record_delivery(
         state,
@@ -154,6 +159,17 @@ def run_heatmap(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_delivery_test(args: argparse.Namespace) -> int:
+    config = load_config(args.config)
+    delivery = _deliver(
+        config,
+        "🏋️ LeetLift 邮件通道测试",
+        "<h2>LeetLift 邮件通道可用 ✓</h2><p>这是一封测试邮件，不会选题、更新状态或修改热力图。</p>",
+    )
+    _write_summary(f"## LeetLift 邮件测试成功\n\n- delivery: `{delivery}`")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="赛博健身：每天随机推送一道 LeetCode 题")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -181,6 +197,10 @@ def build_parser() -> argparse.ArgumentParser:
     heatmap.add_argument("--output", default="assets/leetlift-heatmap.svg")
     heatmap.add_argument("--date", help="指定生成日期，格式 YYYY-MM-DD")
     heatmap.set_defaults(func=run_heatmap)
+
+    delivery_test = subparsers.add_parser("delivery-test", help="测试邮件通道，不更新训练状态")
+    delivery_test.add_argument("--config", default="config.json")
+    delivery_test.set_defaults(func=run_delivery_test)
     return parser
 
 
