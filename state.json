@@ -98,6 +98,32 @@
         "title_cn": "只出现一次的数字"
       },
       "scope": "hot100"
+    },
+    {
+      "date": "2026-08-05",
+      "kind": "new",
+      "problem": {
+        "difficulty": "EASY",
+        "frontend_id": "1",
+        "paid_only": false,
+        "section": "哈希",
+        "slug": "two-sum",
+        "tags": [
+          {
+            "name": "Array",
+            "name_cn": "数组",
+            "slug": "array"
+          },
+          {
+            "name": "Hash Table",
+            "name_cn": "哈希表",
+            "slug": "hash-table"
+          }
+        ],
+        "title": "Two Sum",
+        "title_cn": "两数之和"
+      },
+      "scope": "hot100"
     }
   ],
   "processed_feedback_issues": [],
@@ -112,7 +138,8 @@
       "seen": [
         "word-search",
         "daily-temperatures",
-        "single-number"
+        "single-number",
+        "two-sum"
       ]
     }
   },
