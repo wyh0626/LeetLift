@@ -2,8 +2,6 @@ name: LeetLift Scheduler
 
 on:
   schedule:
-    # 临时注册探针；确认新调度器产生 schedule 事件后删除。
-    - cron: "*/5 * * * *"
     # GitHub cron 使用 UTC；北京时间 10 点时段分四次兜底。
     # daily 工作流按日期幂等，四次触发实际最多发送一封邮件。
     - cron: "7,22,37,52 2 * * *"

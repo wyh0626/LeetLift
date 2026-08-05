@@ -8,7 +8,7 @@ LeetLift 使用 GitHub Actions 定时选题，默认可通过 Resend 邮件 API 
 
 ## 能做什么
 
-- 每天北京时间 10:07 自动推送一道题
+- 每天北京时间 10:07 开始自动推送一道题，未成功时在 10 点时段重试
 - `hot100` / `all` 两种题目范围
 - 可按简单、中等、困难筛选，默认排除会员题
 - 一轮内避免重复，全部练完后自动开始下一轮
@@ -143,15 +143,15 @@ LeetLift 使用 GitHub Actions 定时选题，默认可通过 Resend 邮件 API 
 
 ## 修改推送时间
 
-默认配置位于 [`.github/workflows/daily.yml`](./.github/workflows/daily.yml)：
+默认配置位于 [`.github/workflows/scheduler.yml`](./.github/workflows/scheduler.yml)：
 
 ```yaml
 on:
   schedule:
-    - cron: "7 2 * * *"
+    - cron: "7,22,37,52 2 * * *"
 ```
 
-GitHub cron 使用 UTC，`7 2 * * *` 对应北京时间每天 10:07。这里特意避开整点，因为 GitHub Actions 在整点负载较高，定时任务可能延迟，极端情况下会被丢弃。LeetLift 还会检查当天是否已成功推送，手动补发和迟到任务不会造成重复邮件。
+GitHub cron 使用 UTC，上面的配置会在北京时间每天 10:07、10:22、10:37、10:52 尝试唤醒工作流。这里特意避开整点，因为 GitHub Actions 在整点负载较高，定时任务可能延迟，极端情况下会被丢弃。调度器与可手动运行的 `daily.yml` 分离；LeetLift 会检查当天是否已成功推送，四次调度、手动补发和迟到任务实际最多发送一封邮件。
 
 常用时间：
 
@@ -160,7 +160,7 @@ GitHub cron 使用 UTC，`7 2 * * *` 对应北京时间每天 10:07。这里特�
 | 07:30 | `30 23 * * *` |
 | 08:00 | `0 0 * * *` |
 | 09:00 | `0 1 * * *` |
-| 10:07 | `7 2 * * *` |
+| 10 点时段四次兜底 | `7,22,37,52 2 * * *` |
 
 修改 cron 后提交到默认分支即可。
 
@@ -243,6 +243,7 @@ GitHub 会直接读取最新 SVG；更新后可能有短暂缓存。
 .
 ├── .github/workflows/
 │   ├── daily.yml       # 定时选题、推送、回写状态
+│   ├── scheduler.yml   # 定时唤醒 daily 工作流
 │   ├── delivery-test.yml # 单独测试发送通道，不修改状态
 │   └── feedback.yml    # 处理反馈 Issue、更新复习队列
 ├── leetlift/           # Python 标准库实现
