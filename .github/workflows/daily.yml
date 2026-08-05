@@ -2,9 +2,11 @@ name: Daily LeetLift
 
 on:
   schedule:
-    # 避开 GitHub Actions 容易拥堵、甚至丢任务的整点。
-    # GitHub cron 使用 UTC；02:07 UTC = 北京时间 10:07。
-    - cron: "7 2 * * *"
+    # 临时调度探针：确认 GitHub 已为新仓库注册 schedule，验证后删除。
+    - cron: "*/5 * * * *"
+    # GitHub cron 使用 UTC；北京时间 10 点时段分四次兜底。
+    # 程序按日期幂等，四次触发实际最多发送一封邮件。
+    - cron: "7,22,37,52 2 * * *"
   workflow_dispatch:
     inputs:
       scope:
