@@ -1,12 +1,20 @@
 name: Daily LeetLift
 
 on:
-  schedule:
-    # 临时调度探针：确认 GitHub 已为新仓库注册 schedule，验证后删除。
-    - cron: "*/5 * * * *"
-    # GitHub cron 使用 UTC；北京时间 10 点时段分四次兜底。
-    # 程序按日期幂等，四次触发实际最多发送一封邮件。
-    - cron: "7,22,37,52 2 * * *"
+  workflow_call:
+    secrets:
+      PUSHPLUS_TOKEN:
+        required: false
+      RESEND_API_KEY:
+        required: false
+      RESEND_TO:
+        required: false
+      SMTP_USERNAME:
+        required: false
+      SMTP_PASSWORD:
+        required: false
+      SMTP_TO:
+        required: false
   workflow_dispatch:
     inputs:
       scope:
