@@ -160,6 +160,37 @@
         "title_cn": "最长递增子序列"
       },
       "scope": "hot100"
+    },
+    {
+      "date": "2026-08-07",
+      "kind": "new",
+      "problem": {
+        "difficulty": "MEDIUM",
+        "frontend_id": "438",
+        "paid_only": false,
+        "section": "滑动窗口",
+        "slug": "find-all-anagrams-in-a-string",
+        "tags": [
+          {
+            "name": "Hash Table",
+            "name_cn": "哈希表",
+            "slug": "hash-table"
+          },
+          {
+            "name": "String",
+            "name_cn": "字符串",
+            "slug": "string"
+          },
+          {
+            "name": "Sliding Window",
+            "name_cn": "滑动窗口",
+            "slug": "sliding-window"
+          }
+        ],
+        "title": "Find All Anagrams in a String",
+        "title_cn": "找到字符串中所有字母异位词"
+      },
+      "scope": "hot100"
     }
   ],
   "processed_feedback_issues": [],
@@ -176,7 +207,8 @@
         "daily-temperatures",
         "single-number",
         "two-sum",
-        "longest-increasing-subsequence"
+        "longest-increasing-subsequence",
+        "find-all-anagrams-in-a-string"
       ]
     }
   },
