@@ -191,6 +191,32 @@
         "title_cn": "找到字符串中所有字母异位词"
       },
       "scope": "hot100"
+    },
+    {
+      "date": "2026-08-08",
+      "kind": "new",
+      "problem": {
+        "difficulty": "MEDIUM",
+        "frontend_id": "31",
+        "paid_only": false,
+        "section": "技巧",
+        "slug": "next-permutation",
+        "tags": [
+          {
+            "name": "Array",
+            "name_cn": "数组",
+            "slug": "array"
+          },
+          {
+            "name": "Two Pointers",
+            "name_cn": "双指针",
+            "slug": "two-pointers"
+          }
+        ],
+        "title": "Next Permutation",
+        "title_cn": "下一个排列"
+      },
+      "scope": "hot100"
     }
   ],
   "processed_feedback_issues": [],
@@ -208,7 +234,8 @@
         "single-number",
         "two-sum",
         "longest-increasing-subsequence",
-        "find-all-anagrams-in-a-string"
+        "find-all-anagrams-in-a-string",
+        "next-permutation"
       ]
     }
   },
