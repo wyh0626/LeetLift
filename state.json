@@ -217,6 +217,32 @@
         "title_cn": "下一个排列"
       },
       "scope": "hot100"
+    },
+    {
+      "date": "2026-08-09",
+      "kind": "new",
+      "problem": {
+        "difficulty": "MEDIUM",
+        "frontend_id": "198",
+        "paid_only": false,
+        "section": "动态规划",
+        "slug": "house-robber",
+        "tags": [
+          {
+            "name": "Array",
+            "name_cn": "数组",
+            "slug": "array"
+          },
+          {
+            "name": "Dynamic Programming",
+            "name_cn": "动态规划",
+            "slug": "dynamic-programming"
+          }
+        ],
+        "title": "House Robber",
+        "title_cn": "打家劫舍"
+      },
+      "scope": "hot100"
     }
   ],
   "processed_feedback_issues": [],
@@ -235,7 +261,8 @@
         "two-sum",
         "longest-increasing-subsequence",
         "find-all-anagrams-in-a-string",
-        "next-permutation"
+        "next-permutation",
+        "house-robber"
       ]
     }
   },
