@@ -325,6 +325,42 @@
         "title_cn": "两数相加"
       },
       "scope": "hot100"
+    },
+    {
+      "date": "2026-08-12",
+      "kind": "new",
+      "problem": {
+        "difficulty": "MEDIUM",
+        "frontend_id": "230",
+        "paid_only": false,
+        "section": "二叉树",
+        "slug": "kth-smallest-element-in-a-bst",
+        "tags": [
+          {
+            "name": "Tree",
+            "name_cn": "树",
+            "slug": "tree"
+          },
+          {
+            "name": "Depth-First Search",
+            "name_cn": "深度优先搜索",
+            "slug": "depth-first-search"
+          },
+          {
+            "name": "Binary Search Tree",
+            "name_cn": "二叉搜索树",
+            "slug": "binary-search-tree"
+          },
+          {
+            "name": "Binary Tree",
+            "name_cn": "二叉树",
+            "slug": "binary-tree"
+          }
+        ],
+        "title": "Kth Smallest Element in a BST",
+        "title_cn": "二叉搜索树中第 K 小的元素"
+      },
+      "scope": "hot100"
     }
   ],
   "processed_feedback_issues": [
@@ -381,7 +417,8 @@
         "next-permutation",
         "house-robber",
         "sort-colors",
-        "add-two-numbers"
+        "add-two-numbers",
+        "kth-smallest-element-in-a-bst"
       ]
     }
   },
