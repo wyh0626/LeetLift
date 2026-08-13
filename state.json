@@ -361,6 +361,42 @@
         "title_cn": "二叉搜索树中第 K 小的元素"
       },
       "scope": "hot100"
+    },
+    {
+      "date": "2026-08-13",
+      "kind": "new",
+      "problem": {
+        "difficulty": "MEDIUM",
+        "frontend_id": "208",
+        "paid_only": false,
+        "section": "图论",
+        "slug": "implement-trie-prefix-tree",
+        "tags": [
+          {
+            "name": "Design",
+            "name_cn": "设计",
+            "slug": "design"
+          },
+          {
+            "name": "Trie",
+            "name_cn": "字典树",
+            "slug": "trie"
+          },
+          {
+            "name": "Hash Table",
+            "name_cn": "哈希表",
+            "slug": "hash-table"
+          },
+          {
+            "name": "String",
+            "name_cn": "字符串",
+            "slug": "string"
+          }
+        ],
+        "title": "Implement Trie (Prefix Tree)",
+        "title_cn": "实现 Trie (前缀树)"
+      },
+      "scope": "hot100"
     }
   ],
   "processed_feedback_issues": [
@@ -418,7 +454,8 @@
         "house-robber",
         "sort-colors",
         "add-two-numbers",
-        "kth-smallest-element-in-a-bst"
+        "kth-smallest-element-in-a-bst",
+        "implement-trie-prefix-tree"
       ]
     }
   },
