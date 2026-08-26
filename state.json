@@ -769,6 +769,37 @@
         "title_cn": "两数相加"
       },
       "scope": "hot100"
+    },
+    {
+      "date": "2026-08-26",
+      "kind": "review",
+      "problem": {
+        "difficulty": "MEDIUM",
+        "frontend_id": "2",
+        "paid_only": false,
+        "section": "链表",
+        "slug": "add-two-numbers",
+        "tags": [
+          {
+            "name": "Recursion",
+            "name_cn": "递归",
+            "slug": "recursion"
+          },
+          {
+            "name": "Linked List",
+            "name_cn": "链表",
+            "slug": "linked-list"
+          },
+          {
+            "name": "Math",
+            "name_cn": "数学",
+            "slug": "math"
+          }
+        ],
+        "title": "Add Two Numbers",
+        "title_cn": "两数相加"
+      },
+      "scope": "hot100"
     }
   ],
   "processed_feedback_issues": [
@@ -776,10 +807,10 @@
   ],
   "reviews": {
     "add-two-numbers": {
-      "last_delivered": "2026-08-25",
+      "last_delivered": "2026-08-26",
       "last_feedback": "2026-08-11",
       "level": 1,
-      "next_review": "2026-08-26",
+      "next_review": "2026-08-27",
       "problem": {
         "difficulty": "MEDIUM",
         "frontend_id": "2",
